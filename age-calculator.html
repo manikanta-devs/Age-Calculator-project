@@ -1,0 +1,546 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chronos - Age Analysis System</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&family=Syne:wght@600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #2563eb;
+            --primary-light: #3b82f6;
+            --primary-dark: #1e40af;
+            --secondary: #0f766e;
+            --surface: #ffffff;
+            --surface-alt: #f8fafc;
+            --border: #e2e8f0;
+            --text-primary: #0f172a;
+            --text-secondary: #64748b;
+            --success: #16a34a;
+            --warning: #ea580c;
+            --danger: #dc2626;
+            --shadow-sm: 0 1px 2px rgba(15, 23, 42, 0.05);
+            --shadow-md: 0 4px 6px rgba(15, 23, 42, 0.07);
+            --shadow-lg: 0 10px 15px rgba(15, 23, 42, 0.1);
+            --shadow-xl: 0 20px 25px rgba(15, 23, 42, 0.1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Outfit', sans-serif;
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+            color: var(--text-primary);
+            min-height: 100vh;
+            padding: 24px;
+        }
+
+        .page-wrapper {
+            max-width: 900px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            gap: 32px;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 16px;
+            animation: fadeInDown 0.6s ease-out;
+        }
+
+        .header-badge {
+            display: inline-block;
+            background: var(--primary-light);
+            color: white;
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 12px;
+        }
+
+        h1 {
+            font-family: 'Syne', sans-serif;
+            font-size: 42px;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 8px;
+            letter-spacing: -0.5px;
+        }
+
+        .header-subtitle {
+            color: var(--text-secondary);
+            font-size: 16px;
+            font-weight: 400;
+        }
+
+        .container {
+            background: var(--surface);
+            border-radius: 16px;
+            padding: 40px;
+            box-shadow: var(--shadow-xl);
+            animation: fadeInUp 0.6s ease-out;
+            border: 1px solid var(--border);
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 24px;
+            margin-bottom: 32px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        label {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-primary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        input[type="date"] {
+            padding: 12px 16px;
+            border: 2px solid var(--border);
+            border-radius: 10px;
+            font-size: 16px;
+            font-family: 'Outfit', sans-serif;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            background: var(--surface-alt);
+            color: var(--text-primary);
+        }
+
+        input[type="date"]:hover {
+            border-color: var(--primary-light);
+            background: var(--surface);
+        }
+
+        input[type="date"]:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+            background: var(--surface);
+        }
+
+        .button-group {
+            display: flex;
+            gap: 12px;
+        }
+
+        button {
+            flex: 1;
+            padding: 14px 24px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            font-family: 'Outfit', sans-serif;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        button:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 12px rgba(37, 99, 235, 0.3);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        button.secondary {
+            background: var(--surface-alt);
+            color: var(--text-primary);
+            border: 2px solid var(--border);
+        }
+
+        button.secondary:hover {
+            background: var(--border);
+            border-color: var(--primary);
+        }
+
+        .error-message {
+            padding: 12px 16px;
+            background: rgba(220, 38, 38, 0.1);
+            border: 1px solid var(--danger);
+            border-radius: 10px;
+            color: var(--danger);
+            font-size: 14px;
+            font-weight: 500;
+            display: none;
+            animation: slideIn 0.3s ease-out;
+        }
+
+        .error-message.show {
+            display: block;
+        }
+
+        .results-section {
+            display: none;
+            animation: fadeInUp 0.6s ease-out;
+        }
+
+        .results-section.show {
+            display: block;
+        }
+
+        .results-header {
+            margin-bottom: 24px;
+            padding-bottom: 16px;
+            border-bottom: 2px solid var(--border);
+        }
+
+        .results-header h2 {
+            font-family: 'Syne', sans-serif;
+            font-size: 24px;
+            color: var(--text-primary);
+        }
+
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .metric-card {
+            background: var(--surface-alt);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            animation: fadeInUp 0.6s ease-out;
+        }
+
+        .metric-card:nth-child(1) { animation-delay: 0.1s; }
+        .metric-card:nth-child(2) { animation-delay: 0.2s; }
+        .metric-card:nth-child(3) { animation-delay: 0.3s; }
+
+        .metric-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-md);
+            border-color: var(--primary-light);
+        }
+
+        .metric-label {
+            font-size: 12px;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .metric-value {
+            font-family: 'Syne', sans-serif;
+            font-size: 32px;
+            font-weight: 700;
+            color: var(--primary);
+            line-height: 1;
+        }
+
+        .info-box {
+            background: linear-gradient(135deg, rgba(37, 99, 235, 0.05) 0%, rgba(15, 118, 110, 0.05) 100%);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 20px;
+            margin-top: 24px;
+        }
+
+        .info-box-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .info-box-content {
+            font-size: 14px;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        .timeline {
+            margin-top: 24px;
+            padding: 16px;
+            background: var(--surface-alt);
+            border-radius: 12px;
+        }
+
+        .timeline-item {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding: 12px 0;
+            font-size: 14px;
+        }
+
+        .timeline-item:not(:last-child) {
+            border-bottom: 1px solid var(--border);
+        }
+
+        .timeline-marker {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--primary);
+            flex-shrink: 0;
+        }
+
+        .timeline-content {
+            color: var(--text-secondary);
+        }
+
+        .timeline-content strong {
+            color: var(--text-primary);
+        }
+
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        @media (max-width: 640px) {
+            .container {
+                padding: 24px;
+            }
+
+            h1 {
+                font-size: 32px;
+            }
+
+            .metrics-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .button-group {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="page-wrapper">
+        <header>
+            <div class="header-badge">Professional Tool</div>
+            <h1>Chronos</h1>
+            <p class="header-subtitle">Precise Age Analysis System</p>
+        </header>
+
+        <div class="container">
+            <div class="form-grid">
+                <div class="form-group">
+                    <label for="dob">Date of Birth</label>
+                    <input type="date" id="dob" />
+                </div>
+                
+                <div class="error-message" id="error"></div>
+
+                <div class="button-group">
+                    <button onclick="calculateAge()">Calculate Age</button>
+                    <button class="secondary" onclick="resetForm()">Clear</button>
+                </div>
+            </div>
+
+            <div class="results-section" id="results">
+                <div class="results-header">
+                    <h2>Age Analysis Results</h2>
+                </div>
+
+                <div class="metrics-grid">
+                    <div class="metric-card">
+                        <div class="metric-label">Years</div>
+                        <div class="metric-value" id="years">0</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-label">Months</div>
+                        <div class="metric-value" id="months">0</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-label">Days</div>
+                        <div class="metric-value" id="days">0</div>
+                    </div>
+                </div>
+
+                <div class="timeline">
+                    <div class="timeline-item">
+                        <div class="timeline-marker"></div>
+                        <div class="timeline-content">You are <strong id="ageText">0 years old</strong></div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-marker"></div>
+                        <div class="timeline-content">You have lived <strong id="daysTotal">0</strong> total days</div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-marker"></div>
+                        <div class="timeline-content">You have lived <strong id="hoursTotal">0</strong> total hours</div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-marker"></div>
+                        <div class="timeline-content">Next birthday in <strong id="daysUntil">0</strong> days</div>
+                    </div>
+                </div>
+
+                <div class="info-box">
+                    <div class="info-box-title">Life Statistics</div>
+                    <div class="info-box-content">
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 8px;">
+                            <div>
+                                <strong style="color: var(--text-primary);">Age Percentage:</strong><br>
+                                <span id="agePercentage">0%</span>
+                            </div>
+                            <div>
+                                <strong style="color: var(--text-primary);">Birth Day:</strong><br>
+                                <span id="birthDay">-</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function calculateAge() {
+            const dobInput = document.getElementById('dob').value;
+            const errorDiv = document.getElementById('error');
+            const resultDiv = document.getElementById('results');
+
+            errorDiv.classList.remove('show');
+            errorDiv.textContent = '';
+
+            if (!dobInput) {
+                errorDiv.textContent = 'Please select a date of birth';
+                errorDiv.classList.add('show');
+                resultDiv.classList.remove('show');
+                return;
+            }
+
+            const dob = new Date(dobInput);
+            const today = new Date();
+
+            if (dob > today) {
+                errorDiv.textContent = 'Date of birth cannot be in the future';
+                errorDiv.classList.add('show');
+                resultDiv.classList.remove('show');
+                return;
+            }
+
+            // Calculate age
+            let years = today.getFullYear() - dob.getFullYear();
+            let months = today.getMonth() - dob.getMonth();
+            let days = today.getDate() - dob.getDate();
+
+            if (days < 0) {
+                months--;
+                const prevMonth = new Date(today.getFullYear(), today.getMonth(), 0);
+                days += prevMonth.getDate();
+            }
+
+            if (months < 0) {
+                years--;
+                months += 12;
+            }
+
+            // Calculate additional statistics
+            const totalDays = Math.floor((today - dob) / (1000 * 60 * 60 * 24));
+            const totalHours = totalDays * 24;
+            
+            // Calculate next birthday
+            let nextBirthday = new Date(today.getFullYear(), dob.getMonth(), dob.getDate());
+            if (nextBirthday < today) {
+                nextBirthday = new Date(today.getFullYear() + 1, dob.getMonth(), dob.getDate());
+            }
+            const daysUntilBirthday = Math.ceil((nextBirthday - today) / (1000 * 60 * 60 * 24));
+
+            // Age percentage (assuming 80 years as full life)
+            const agePercentage = Math.round((years / 80) * 100);
+
+            // Get day of week
+            const days_of_week = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+            const birthDay = days_of_week[dob.getDay()];
+            const birthDate = dob.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+
+            // Display results
+            document.getElementById('years').textContent = years;
+            document.getElementById('months').textContent = months;
+            document.getElementById('days').textContent = days;
+            document.getElementById('ageText').textContent = `${years} years old`;
+            document.getElementById('daysTotal').textContent = totalDays.toLocaleString();
+            document.getElementById('hoursTotal').textContent = totalHours.toLocaleString();
+            document.getElementById('daysUntil').textContent = daysUntilBirthday;
+            document.getElementById('agePercentage').textContent = `${agePercentage}%`;
+            document.getElementById('birthDay').textContent = `${birthDay}, ${birthDate}`;
+
+            resultDiv.classList.add('show');
+        }
+
+        function resetForm() {
+            document.getElementById('dob').value = '';
+            document.getElementById('results').classList.remove('show');
+            document.getElementById('error').classList.remove('show');
+            document.getElementById('dob').focus();
+        }
+
+        document.getElementById('dob').addEventListener('keypress', function(event) {
+            if (event.key === 'Enter') {
+                calculateAge();
+            }
+        });
+    </script>
+</body>
+</html>
